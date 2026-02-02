@@ -54,17 +54,61 @@ describe("CLI interactive mode", () => {
   });
 });
 
-describe("CLI --create-scenario", () => {
-  test("errors when combined with -p", async () => {
-    const { stderr, exitCode } = await run(["--create-scenario", "-p", "hello"]);
-    expect(exitCode).toBe(1);
-    expect(stderr).toContain("--create-scenario cannot be combined with -p or --scenario");
+describe("CLI --help", () => {
+  test("--help exits 0 and prints subcommand list", async () => {
+    const { stdout, exitCode } = await run(["--help"]);
+    expect(exitCode).toBe(0);
+    expect(stdout).toContain("run");
+    expect(stdout).toContain("create-scenario");
   });
 
-  test("errors when combined with --scenario", async () => {
-    const { stderr, exitCode } = await run(["--create-scenario", "--scenario", "test.json"]);
-    expect(exitCode).toBe(1);
-    expect(stderr).toContain("--create-scenario cannot be combined with -p or --scenario");
+  test("-h exits 0 and works as alias", async () => {
+    const { stdout, exitCode } = await run(["-h"]);
+    expect(exitCode).toBe(0);
+    expect(stdout).toContain("run");
+    expect(stdout).toContain("create-scenario");
+  });
+
+  test("run --help exits 0 and documents flags", async () => {
+    const { stdout, exitCode } = await run(["run", "--help"]);
+    expect(exitCode).toBe(0);
+    expect(stdout).toContain("--scenario");
+    expect(stdout).toContain("-p");
+    expect(stdout).toContain("--hooks-config");
+  });
+
+  test("run -h exits 0", async () => {
+    const { stdout, exitCode } = await run(["run", "-h"]);
+    expect(exitCode).toBe(0);
+    expect(stdout).toContain("--scenario");
+  });
+
+  test("create-scenario --help exits 0 and describes wizard", async () => {
+    const { stdout, exitCode } = await run(["create-scenario", "--help"]);
+    expect(exitCode).toBe(0);
+    expect(stdout).toContain("wizard");
+  });
+
+  test("create-scenario -h exits 0", async () => {
+    const { stdout, exitCode } = await run(["create-scenario", "-h"]);
+    expect(exitCode).toBe(0);
+    expect(stdout).toContain("wizard");
+  });
+});
+
+describe("CLI subcommand routing", () => {
+  test("'run' subcommand works identically to implicit run", async () => {
+    const { stdout, exitCode } = await run(
+      ["run", "--scenario", `${fixturesDir}/valid.json`, "-p", "hello world"],
+    );
+    expect(stdout.trim()).toBe("Hi there!");
+    expect(exitCode).toBe(0);
+  });
+
+  test("'run' subcommand with default catch-all", async () => {
+    const { stdout, exitCode } = await run(["run", "-p", "hello"]);
+    expect(stdout.trim()).toBe("[mock-response]");
+    expect(exitCode).toBe(0);
   });
 });
 

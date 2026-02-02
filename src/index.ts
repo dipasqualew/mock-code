@@ -26,13 +26,20 @@ async function handlePrompt(
 let hooks: HookExecutor = createNoopHookExecutor();
 
 try {
-  const { scenarioPath, prompt, hooksConfigPath, createScenario: shouldCreateScenario } = parseArgs(process.argv);
+  const parsed = parseArgs(process.argv);
 
-  if (shouldCreateScenario) {
+  if (parsed.command === "help") {
+    console.log(parsed.helpText);
+    process.exit(0);
+  }
+
+  if (parsed.command === "create-scenario") {
     const scenario = await createScenario();
     console.log(JSON.stringify(scenario, null, 2));
     process.exit(0);
   }
+
+  const { scenarioPath, prompt, hooksConfigPath } = parsed;
 
   const responses = scenarioPath
     ? await loadScenarioFile(scenarioPath)
