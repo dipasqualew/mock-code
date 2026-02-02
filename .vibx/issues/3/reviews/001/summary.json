@@ -1,5 +1,0 @@
-{
-  "section": "summary",
-  "content": "The uncommitted changes add a CLI layer to mock-code with argument parsing and two operating modes. A new src/args.ts module provides manual argument parsing for --scenario (required) and -p (optional) flags, returning a typed ParsedArgs object. The src/index.ts entry point is rewritten to use parseArgs, then branch into either non-interactive mode (when -p is provided: match the prompt, print result, exit) or interactive mode (read stdin line-by-line, print > prompt to stderr, print match results to stdout). Unit tests in src/args.test.ts cover flag parsing, ordering, and error cases. Integration tests in src/cli.test.ts invoke the entry point via Bun.spawn and assert stdout, stderr, and exit codes for both modes plus error scenarios.",
-  "timestamp": "2026-02-02T15:00:00.000Z"
-}

@@ -1,5 +1,0 @@
-{
-  "section": "summary",
-  "content": "Adds a --create-scenario CLI flag that launches an interactive wizard using @inquirer/prompts. The wizard loops through pattern/message input prompts with a confirm to continue, then outputs a valid ScenarioFile JSON to stdout. The flag is mutually exclusive with -p and --scenario. Changes span argument parsing (args.ts), a new create-scenario module with dependency-injected prompt functions, wiring in index.ts, and corresponding unit and CLI integration tests.\n",
-  "timestamp": "2026-02-02T17:40:44.464Z"
-}

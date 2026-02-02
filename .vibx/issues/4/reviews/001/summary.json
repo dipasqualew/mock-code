@@ -1,5 +1,0 @@
-{
-  "section": "summary",
-  "content": "The diff adds a hook lifecycle system to mock-code. It introduces new types (HookEvent, HookEntry, HooksConfig, HookPayload, HookResponse) in types.ts, a new hooks.ts module with config loading, a subprocess-based hook executor with timeout support, and a noop executor fallback. The args parser gains a --hooks-config flag. The main entry point (index.ts) is wired to fire six lifecycle events (SessionStart, UserPromptSubmit, PreToolUse, PostToolUse, Stop, SessionEnd) at appropriate points in both -p and interactive modes. UserPromptSubmit hooks can modify the effective prompt via their JSON response. Existing tests are updated to include the new hooksConfigPath field, and comprehensive new tests cover config loading, executor behavior, timeout handling, lifecycle ordering, payload correctness, prompt modification, failure resilience, and backwards compatibility without hooks.\n",
-  "timestamp": "2026-02-02T16:33:54.331Z"
-}

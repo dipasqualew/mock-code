@@ -1,5 +1,0 @@
-{
-  "section": "resilience",
-  "content": "Error handling is reasonable for this stage. The matcher handles invalid regex patterns by catching and skipping them. The scenario loader validates the structure of the JSON (checks for responses array and string types on pattern/message). The CLI entry point checks for missing arguments. Areas to note: (1) The scenario loader does not handle file-not-found or JSON parse errors explicitly -- these propagate as unhandled rejections from the top-level await in index.ts, which will crash with a stack trace rather than a user-friendly message. This is acceptable for an initial scaffold but should be improved later. (2) There is no test for a non-existent file path in scenario.test.ts. (3) The matcher silently skips invalid regex patterns, which is the correct behavior per the issue, and is tested. (4) No race conditions are present since the matching is synchronous and the loader is a simple async read.\n",
-  "timestamp": "2026-02-02T14:51:25.177Z"
-}

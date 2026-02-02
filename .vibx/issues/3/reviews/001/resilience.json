@@ -1,5 +1,0 @@
-{
-  "section": "resilience",
-  "content": "Error handling is solid and improved over the prior state. The top-level try/catch in index.ts now catches errors from both argument parsing and scenario loading, prints the error message to stderr (not a stack trace), and exits with code 1. This is a clear improvement over the issue #2 state where errors propagated as unhandled rejections. The args parser validates missing flag values and the required --scenario flag with specific error messages. Integration tests verify all three error paths: missing --scenario, non-existent file, and invalid JSON. One edge case: if stdin is a TTY in interactive mode and the user sends an interrupt (Ctrl+C), the process will exit with SIGINT rather than a clean exit code, but this is standard behavior and not a concern for the pipeline/scripting use case targeted by this issue. No race conditions or concurrency issues are present.",
-  "timestamp": "2026-02-02T15:00:00.000Z"
-}

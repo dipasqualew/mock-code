@@ -1,5 +1,0 @@
-{
-  "section": "resilience",
-  "content": "The mutual-exclusivity validation between --create-scenario and -p/--scenario is solid. The wizard itself has a potential edge case: if the user provides an empty string for pattern or message, it will be accepted without validation. An empty pattern would compile to a regex matching everything (which may be intentional), but an empty message would produce a response entry with an empty string. Whether this is a problem depends on the use case -- it may be worth adding a validation loop or at minimum documenting the behavior. The --create-scenario flag combined with --hooks-config is not explicitly rejected; this is harmless since the create-scenario path exits before hooks are loaded, but it could be confusing to users who pass both. Error handling in the wizard relies on @inquirer/prompts throwing on cancellation (e.g., Ctrl+C), which would bubble up to the top-level catch block in index.ts and produce a non-zero exit. This is adequate.\n",
-  "timestamp": "2026-02-02T17:41:06.730Z"
-}
