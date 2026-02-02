@@ -1,0 +1,12 @@
+{
+  "provider": "github",
+  "providers": {
+    "filesystem": {
+      "issuesDir": "docs/issues"
+    },
+    "github": {
+      "repo": "dipasqualew/mock-code"
+    }
+  },
+  "mergeFlow": "local"
+}
