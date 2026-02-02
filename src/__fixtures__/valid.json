@@ -1,0 +1,6 @@
+{
+  "responses": [
+    { "pattern": "^hello", "message": "Hi there!" },
+    { "pattern": ".*refactor.*", "message": "I'll refactor that for you." }
+  ]
+}

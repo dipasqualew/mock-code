@@ -1,0 +1,5 @@
+{
+  "responses": [
+    { "pattern": 123, "message": "Bad entry" }
+  ]
+}

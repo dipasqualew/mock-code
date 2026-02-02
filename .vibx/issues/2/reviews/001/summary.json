@@ -1,0 +1,5 @@
+{
+  "section": "summary",
+  "content": "The uncommitted changes scaffold a Bun/TypeScript project from scratch. They add package.json with Bun as runtime, TypeScript config, and four source modules: types.ts (interfaces for ScenarioResponse and ScenarioFile), scenario.ts (async loader that reads and validates a JSON scenario file), matcher.ts (regex matching engine that evaluates patterns in order and returns the first match or [no-match-found]), and index.ts (CLI entry point that reads a scenario file and matches stdin lines). The changes also include comprehensive unit tests for both the matcher and scenario loader, plus JSON fixtures for testing valid and invalid scenario files.\n",
+  "timestamp": "2026-02-02T14:51:02.454Z"
+}
