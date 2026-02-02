@@ -54,6 +54,20 @@ describe("CLI interactive mode", () => {
   });
 });
 
+describe("CLI --create-scenario", () => {
+  test("errors when combined with -p", async () => {
+    const { stderr, exitCode } = await run(["--create-scenario", "-p", "hello"]);
+    expect(exitCode).toBe(1);
+    expect(stderr).toContain("--create-scenario cannot be combined with -p or --scenario");
+  });
+
+  test("errors when combined with --scenario", async () => {
+    const { stderr, exitCode } = await run(["--create-scenario", "--scenario", "test.json"]);
+    expect(exitCode).toBe(1);
+    expect(stderr).toContain("--create-scenario cannot be combined with -p or --scenario");
+  });
+});
+
 describe("CLI error cases", () => {
   test("uses default catch-all response when --scenario is missing", async () => {
     const { stdout, exitCode } = await run(["-p", "hello"]);

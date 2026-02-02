@@ -2,6 +2,7 @@ import { parseArgs } from "./args";
 import { loadScenarioFile } from "./scenario";
 import { match } from "./matcher";
 import { loadHooksConfig, createHookExecutor, createNoopHookExecutor } from "./hooks";
+import { createScenario } from "./create-scenario";
 import type { HookExecutor } from "./hooks";
 import type { ScenarioResponse } from "./types";
 
@@ -25,7 +26,14 @@ async function handlePrompt(
 let hooks: HookExecutor = createNoopHookExecutor();
 
 try {
-  const { scenarioPath, prompt, hooksConfigPath } = parseArgs(process.argv);
+  const { scenarioPath, prompt, hooksConfigPath, createScenario: shouldCreateScenario } = parseArgs(process.argv);
+
+  if (shouldCreateScenario) {
+    const scenario = await createScenario();
+    console.log(JSON.stringify(scenario, null, 2));
+    process.exit(0);
+  }
+
   const responses = scenarioPath
     ? await loadScenarioFile(scenarioPath)
     : [{ pattern: ".*", message: "[mock-response]" }];

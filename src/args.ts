@@ -2,6 +2,7 @@ export interface ParsedArgs {
   scenarioPath: string | null;
   prompt: string | null;
   hooksConfigPath: string | null;
+  createScenario: boolean;
 }
 
 export function parseArgs(argv: string[]): ParsedArgs {
@@ -10,6 +11,7 @@ export function parseArgs(argv: string[]): ParsedArgs {
   let scenarioPath: string | null = null;
   let prompt: string | null = null;
   let hooksConfigPath: string | null = null;
+  let createScenario = false;
 
   for (let i = 0; i < args.length; i++) {
     if (args[i] === "--scenario") {
@@ -27,8 +29,14 @@ export function parseArgs(argv: string[]): ParsedArgs {
         throw new Error("Missing value for --hooks-config");
       }
       hooksConfigPath = args[++i];
+    } else if (args[i] === "--create-scenario") {
+      createScenario = true;
     }
   }
 
-  return { scenarioPath, prompt, hooksConfigPath };
+  if (createScenario && (prompt !== null || scenarioPath !== null)) {
+    throw new Error("--create-scenario cannot be combined with -p or --scenario");
+  }
+
+  return { scenarioPath, prompt, hooksConfigPath, createScenario };
 }
