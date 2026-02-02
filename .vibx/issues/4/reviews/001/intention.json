@@ -1,0 +1,5 @@
+{
+  "section": "intention",
+  "content": "The diff aligns well with the stated intention. All six lifecycle events are implemented and fired at the correct points. The hook invocation protocol matches the specification: hooks are spawned as subprocesses via sh -c, receive JSON on stdin with {event, data}, and their stdout is parsed as a JSON response. The --hooks-config flag is implemented as specified. UserPromptSubmit can modify the prompt, matching the stated behavior-influence capability. Integration tests verify lifecycle order, payload correctness, prompt modification, and failure resilience -- all listed in the Validation section of the issue. One minor gap: the issue mentions \".claude/settings.json-compatible file\" as an alternative config source, but only --hooks-config is implemented. This is acceptable as \"e.g.\" was used in the issue, making it illustrative rather than prescriptive. The diff stays within scope and does not introduce unrelated changes.\n",
+  "timestamp": "2026-02-02T16:34:02.935Z"
+}

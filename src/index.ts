@@ -1,24 +1,56 @@
 import { parseArgs } from "./args";
 import { loadScenarioFile } from "./scenario";
 import { match } from "./matcher";
+import { loadHooksConfig, createHookExecutor, createNoopHookExecutor } from "./hooks";
+import type { HookExecutor } from "./hooks";
+import type { ScenarioResponse } from "./types";
+
+async function handlePrompt(
+  prompt: string,
+  responses: ScenarioResponse[],
+  hooks: HookExecutor,
+): Promise<void> {
+  const submitResponse = await hooks.fire("UserPromptSubmit", { prompt });
+  let effectivePrompt = prompt;
+  if (submitResponse && typeof submitResponse.prompt === "string") {
+    effectivePrompt = submitResponse.prompt;
+  }
+
+  await hooks.fire("PreToolUse", { prompt: effectivePrompt });
+  const result = match(effectivePrompt, responses);
+  console.log(result);
+  await hooks.fire("PostToolUse", { prompt: effectivePrompt, result });
+}
+
+let hooks: HookExecutor = createNoopHookExecutor();
 
 try {
-  const { scenarioPath, prompt } = parseArgs(process.argv);
+  const { scenarioPath, prompt, hooksConfigPath } = parseArgs(process.argv);
   const responses = await loadScenarioFile(scenarioPath);
 
+  if (hooksConfigPath) {
+    const entries = await loadHooksConfig(hooksConfigPath);
+    hooks = createHookExecutor(entries);
+  }
+
+  await hooks.fire("SessionStart");
+
   if (prompt !== null) {
-    const result = match(prompt, responses);
-    console.log(result);
+    await handlePrompt(prompt, responses, hooks);
   } else {
     process.stderr.write("> ");
     for await (const line of console) {
       if (line === "") continue;
-      const result = match(line, responses);
-      console.log(result);
+      await handlePrompt(line, responses, hooks);
       process.stderr.write("> ");
     }
   }
+
+  await hooks.fire("Stop");
+  await hooks.fire("SessionEnd");
 } catch (error) {
+  await hooks.fire("Stop");
+  await hooks.fire("SessionEnd");
   console.error(error instanceof Error ? error.message : String(error));
   process.exit(1);
 }

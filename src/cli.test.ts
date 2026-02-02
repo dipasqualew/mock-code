@@ -1,22 +1,8 @@
 import { describe, expect, test } from "bun:test";
 import { resolve } from "path";
+import { run } from "./test-helpers";
 
 const fixturesDir = resolve(import.meta.dir, "__fixtures__");
-const entrypoint = resolve(import.meta.dir, "index.ts");
-
-function run(args: string[], stdin?: string): Promise<{ stdout: string; stderr: string; exitCode: number }> {
-  const proc = Bun.spawn(["bun", "run", entrypoint, ...args], {
-    stdin: stdin !== undefined ? new Blob([stdin]) : "ignore",
-    stdout: "pipe",
-    stderr: "pipe",
-  });
-
-  return Promise.all([
-    new Response(proc.stdout).text(),
-    new Response(proc.stderr).text(),
-    proc.exited,
-  ]).then(([stdout, stderr, exitCode]) => ({ stdout, stderr, exitCode }));
-}
 
 describe("CLI -p mode", () => {
   test("prints matching response and exits", async () => {
