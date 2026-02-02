@@ -55,10 +55,10 @@ describe("CLI interactive mode", () => {
 });
 
 describe("CLI error cases", () => {
-  test("exits with 1 when --scenario is missing", async () => {
-    const { stderr, exitCode } = await run(["-p", "hello"]);
-    expect(exitCode).toBe(1);
-    expect(stderr).toContain("Missing required --scenario flag");
+  test("uses default catch-all response when --scenario is missing", async () => {
+    const { stdout, exitCode } = await run(["-p", "hello"]);
+    expect(stdout.trim()).toBe("[mock-response]");
+    expect(exitCode).toBe(0);
   });
 
   test("exits with 1 for non-existent scenario file", async () => {

@@ -17,8 +17,9 @@ describe("parseArgs", () => {
     expect(result).toEqual({ scenarioPath: "test.json", prompt: "hello", hooksConfigPath: null });
   });
 
-  test("throws on missing --scenario", () => {
-    expect(() => parseArgs(["node", "index.ts", "-p", "hello"])).toThrow("Missing required --scenario flag");
+  test("parses without --scenario (default mode)", () => {
+    const result = parseArgs(["node", "index.ts", "-p", "hello"]);
+    expect(result).toEqual({ scenarioPath: null, prompt: "hello", hooksConfigPath: null });
   });
 
   test("throws on missing --scenario value", () => {
@@ -29,8 +30,9 @@ describe("parseArgs", () => {
     expect(() => parseArgs(["node", "index.ts", "--scenario", "test.json", "-p"])).toThrow("Missing value for -p");
   });
 
-  test("throws when no arguments provided", () => {
-    expect(() => parseArgs(["node", "index.ts"])).toThrow("Missing required --scenario flag");
+  test("returns null scenarioPath when no arguments provided", () => {
+    const result = parseArgs(["node", "index.ts"]);
+    expect(result).toEqual({ scenarioPath: null, prompt: null, hooksConfigPath: null });
   });
 
   test("parses --hooks-config flag", () => {

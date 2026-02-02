@@ -1,5 +1,5 @@
 export interface ParsedArgs {
-  scenarioPath: string;
+  scenarioPath: string | null;
   prompt: string | null;
   hooksConfigPath: string | null;
 }
@@ -28,10 +28,6 @@ export function parseArgs(argv: string[]): ParsedArgs {
       }
       hooksConfigPath = args[++i];
     }
-  }
-
-  if (!scenarioPath) {
-    throw new Error("Missing required --scenario flag");
   }
 
   return { scenarioPath, prompt, hooksConfigPath };

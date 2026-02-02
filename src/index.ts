@@ -26,7 +26,9 @@ let hooks: HookExecutor = createNoopHookExecutor();
 
 try {
   const { scenarioPath, prompt, hooksConfigPath } = parseArgs(process.argv);
-  const responses = await loadScenarioFile(scenarioPath);
+  const responses = scenarioPath
+    ? await loadScenarioFile(scenarioPath)
+    : [{ pattern: ".*", message: "[mock-response]" }];
 
   if (hooksConfigPath) {
     const entries = await loadHooksConfig(hooksConfigPath);
