@@ -1,16 +1,24 @@
+import { parseArgs } from "./args";
 import { loadScenarioFile } from "./scenario";
 import { match } from "./matcher";
 
-const scenarioPath = process.argv[2];
+try {
+  const { scenarioPath, prompt } = parseArgs(process.argv);
+  const responses = await loadScenarioFile(scenarioPath);
 
-if (!scenarioPath) {
-  console.error("Usage: mock-code <scenario-file>");
+  if (prompt !== null) {
+    const result = match(prompt, responses);
+    console.log(result);
+  } else {
+    process.stderr.write("> ");
+    for await (const line of console) {
+      if (line === "") continue;
+      const result = match(line, responses);
+      console.log(result);
+      process.stderr.write("> ");
+    }
+  }
+} catch (error) {
+  console.error(error instanceof Error ? error.message : String(error));
   process.exit(1);
-}
-
-const responses = await loadScenarioFile(scenarioPath);
-
-for await (const line of console) {
-  const result = match(line, responses);
-  console.log(result);
 }

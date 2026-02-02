@@ -1,0 +1,92 @@
+import { describe, expect, test } from "bun:test";
+import { resolve } from "path";
+
+const fixturesDir = resolve(import.meta.dir, "__fixtures__");
+const entrypoint = resolve(import.meta.dir, "index.ts");
+
+function run(args: string[], stdin?: string): Promise<{ stdout: string; stderr: string; exitCode: number }> {
+  const proc = Bun.spawn(["bun", "run", entrypoint, ...args], {
+    stdin: stdin !== undefined ? new Blob([stdin]) : "ignore",
+    stdout: "pipe",
+    stderr: "pipe",
+  });
+
+  return Promise.all([
+    new Response(proc.stdout).text(),
+    new Response(proc.stderr).text(),
+    proc.exited,
+  ]).then(([stdout, stderr, exitCode]) => ({ stdout, stderr, exitCode }));
+}
+
+describe("CLI -p mode", () => {
+  test("prints matching response and exits", async () => {
+    const { stdout, exitCode } = await run(
+      ["--scenario", `${fixturesDir}/valid.json`, "-p", "hello world"],
+    );
+    expect(stdout.trim()).toBe("Hi there!");
+    expect(exitCode).toBe(0);
+  });
+
+  test("prints [no-match-found] when no pattern matches", async () => {
+    const { stdout, exitCode } = await run(
+      ["--scenario", `${fixturesDir}/valid.json`, "-p", "xyz"],
+    );
+    expect(stdout.trim()).toBe("[no-match-found]");
+    expect(exitCode).toBe(0);
+  });
+
+  test("matches second pattern", async () => {
+    const { stdout, exitCode } = await run(
+      ["--scenario", `${fixturesDir}/valid.json`, "-p", "please refactor this"],
+    );
+    expect(stdout.trim()).toBe("I'll refactor that for you.");
+    expect(exitCode).toBe(0);
+  });
+});
+
+describe("CLI interactive mode", () => {
+  test("reads lines from stdin and prints responses", async () => {
+    const { stdout, exitCode } = await run(
+      ["--scenario", `${fixturesDir}/valid.json`],
+      "hello\nrefactor this\nunknown\n",
+    );
+    const lines = stdout.trim().split("\n");
+    expect(lines).toEqual([
+      "Hi there!",
+      "I'll refactor that for you.",
+      "[no-match-found]",
+    ]);
+    expect(exitCode).toBe(0);
+  });
+
+  test("writes prompt indicator to stderr", async () => {
+    const { stderr } = await run(
+      ["--scenario", `${fixturesDir}/valid.json`],
+      "hello\n",
+    );
+    expect(stderr).toContain("> ");
+  });
+});
+
+describe("CLI error cases", () => {
+  test("exits with 1 when --scenario is missing", async () => {
+    const { stderr, exitCode } = await run(["-p", "hello"]);
+    expect(exitCode).toBe(1);
+    expect(stderr).toContain("Missing required --scenario flag");
+  });
+
+  test("exits with 1 for non-existent scenario file", async () => {
+    const { exitCode } = await run(
+      ["--scenario", "/nonexistent/file.json", "-p", "hello"],
+    );
+    expect(exitCode).toBe(1);
+  });
+
+  test("exits with 1 for invalid JSON scenario file", async () => {
+    const { exitCode, stderr } = await run(
+      ["--scenario", `${fixturesDir}/missing-responses.json`, "-p", "hello"],
+    );
+    expect(exitCode).toBe(1);
+    expect(stderr).toContain("Invalid scenario file");
+  });
+});

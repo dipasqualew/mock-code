@@ -1,0 +1,5 @@
+{
+  "section": "intention",
+  "content": "The diff aligns closely with the stated intention in issue #3. All three desired CLI behaviors are implemented: (1) --scenario flag is required and parsed, (2) -p mode matches the prompt argument against scenario patterns, prints the response, and exits, (3) interactive mode reads stdin line-by-line, writes a > prompt to stderr, and prints match results to stdout. Manual argument parsing is used as preferred over external dependencies. Exit codes follow the spec: 0 on success, 1 on error (missing scenario, non-existent file, invalid JSON). The validation criteria from the issue are fully addressed: integration tests invoke the entry point in -p mode, interactive mode with piped stdin, no-match returns [no-match-found], and error cases (missing --scenario, non-existent file, invalid JSON) are all tested. One minor observation: the issue mentions unknown flags should be an error, but the implementation silently ignores unknown flags. This is a reasonable design choice for forward compatibility but diverges slightly from one reading of the spec.",
+  "timestamp": "2026-02-02T15:00:00.000Z"
+}
