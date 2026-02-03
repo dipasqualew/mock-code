@@ -3,13 +3,16 @@ import { loadScenarioFile } from "./scenario";
 import { match } from "./matcher";
 import { loadHooksConfig, createHookExecutor, createNoopHookExecutor } from "./hooks";
 import { createScenario } from "./create-scenario";
+import { createSessionContext, appendHistory, appendSession } from "./session";
 import type { HookExecutor } from "./hooks";
 import type { ScenarioResponse } from "./types";
+import type { SessionContext } from "./session";
 
 async function handlePrompt(
   prompt: string,
   responses: ScenarioResponse[],
   hooks: HookExecutor,
+  session: SessionContext,
 ): Promise<void> {
   const submitResponse = await hooks.fire("UserPromptSubmit", { prompt });
   let effectivePrompt = prompt;
@@ -21,6 +24,10 @@ async function handlePrompt(
   const result = match(effectivePrompt, responses);
   console.log(result);
   await hooks.fire("PostToolUse", { prompt: effectivePrompt, result });
+
+  await appendHistory(effectivePrompt, session);
+  await appendSession({ type: "user", content: effectivePrompt }, session);
+  await appendSession({ type: "assistant", content: result }, session);
 }
 
 let hooks: HookExecutor = createNoopHookExecutor();
@@ -50,15 +57,20 @@ try {
     hooks = createHookExecutor(entries);
   }
 
+  const session = createSessionContext(
+    process.cwd(),
+    process.env.MOCK_CODE_BASE_DIR,
+  );
+
   await hooks.fire("SessionStart");
 
   if (prompt !== null) {
-    await handlePrompt(prompt, responses, hooks);
+    await handlePrompt(prompt, responses, hooks, session);
   } else {
     process.stderr.write("> ");
     for await (const line of console) {
       if (line === "") continue;
-      await handlePrompt(line, responses, hooks);
+      await handlePrompt(line, responses, hooks, session);
       process.stderr.write("> ");
     }
   }
